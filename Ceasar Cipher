@@ -1,0 +1,36 @@
+ #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void encryptCaesar(char plainText[], int key) {
+    int length = strlen(plainText);
+    printf("\n \n \t ENCRYPTED TEXT: ");
+    for (int i = 0; i < length; i++) {
+        if (isalpha(plainText[i])) {
+            char base = isupper(plainText[i]) ? 'A' : 'a';
+            plainText[i] = (plainText[i] - base + key) % 26 + base;
+        }
+        printf("%c", plainText[i]);
+    }
+}
+void decryptCaesar(char cipherText[], int key) {
+    int length = strlen(cipherText);
+    printf("\n \n \t AFTER DECRYPTION: ");
+    for (int i = 0; i < length; i++) {
+        if (isalpha(cipherText[i])) {
+            char base = isupper(cipherText[i]) ? 'A' : 'a';
+            cipherText[i] = (cipherText[i] - base - key + 26) % 26 + base;
+        }
+        printf("%c", cipherText[i]);
+    }
+}
+int main() {
+    char text[100];
+    int key;
+    printf("\n Enter the text: ");
+    fgets(text, sizeof(text), stdin);
+    printf("\n Enter the key value: ");
+    scanf("%d", &key);
+    encryptCaesar(text, key);
+    decryptCaesar(text, key);
+    return 0;
+}
