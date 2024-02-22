@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#define SIZE 5
+void generateKeyTable(char key[], char keyTable[SIZE][SIZE]) {
+    char alphabet[26] = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    char *ptr = key;
+    int i, j, k;
+    for (i = 0; i < SIZE; i++) {
+        for (j = 0; j < SIZE; j++) {
+            keyTable[i][j] = 0;
+        }
+    }
+    for (k = 0; k < strlen(key); k++) {
+        if (*ptr == 'J') {
+            // Treat 'J' as 'I'
+            *ptr = 'I';
+        }
+        if (alphabet[*ptr - 'A'] == 0) 
+            keyTable[k / SIZE][k % SIZE] = *ptr;
+            alphabet[*ptr - 'A'] = 1;
+        } else {
+            k--;
+        }
+
+        ptr++;
+}
+    for (k = 0; k < 26; k++) {
+        if (alphabet[k] == 0) {
+            keyTable[i][j] = (char)('A' + k);
+            j++;
+            if (j == SIZE) {
+                j = 0;
+                i++;
+            }
+        }
+    }
+}
+void findPosition(char keyTable[SIZE][SIZE], char letter, int *row, int *col) {
+    if (letter == 'J') {
+        letter = 'I';
+    }
+
+    for (*row = 0; *row < SIZE; (*row)++) {
+        for (*col = 0; *col < SIZE; (*col)++) {
+            if (keyTable[*row][*col] == letter) {
+                return;
+            }
+        }
+    }
+}
+void encryptPair(char keyTable[SIZE][SIZE], char a, char b) {
+    int row1, col1, row2, col2;
+
+    findPosition(keyTable, a, &row1, &col1);
+    findPosition(keyTable, b, &row2, &col2);
+
+    if (row1 == row2) {
+        printf("%c%c", keyTable[row1][(col1 + 1) % SIZE], keyTable[row2][(col2 + 1) % SIZE]);
+    } else if (col1 == col2) {
+        printf("%c%c", keyTable[(row1 + 1) % SIZE][col1], keyTable[(row2 + 1) % SIZE][col2]);
+    } else{
+        printf("%c%c", keyTable[row1][col2], keyTable[row2][col1]);
+    }
+}
+void playfairEncrypt(char keyTable[SIZE][SIZE], char message[]) {
+    int i = 0;
+
+    while (i < strlen(message)) {
+        char a = toupper(message[i]);
+        char b = toupper(message[i + 1]);
+
+        if (a == b) {
+            encryptPair(keyTable, a, 'X');
+            i++;
+        } else {
+            encryptPair(keyTable, a, b);
+        }
+
+        i += 2;
+    }
+}
+
+int main() {
+    char key[25], message[100];
+    char keyTable[SIZE][SIZE];
+    printf("\nEnter the key (max 25 characters): ");
+    fgets(key, sizeof(key), stdin);
+    printf("\nEnter the message to be encrypted: ");
+    fgets(message, sizeof(message), stdin);
+    generateKeyTable(key, keyTable);
+    playfairEncrypt(keyTable, message);
+
+    return 0;
+}
