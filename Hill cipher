@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+void hillCipherEncrypt(char *message, int key[2][2]) {
+    int len = strlen(message);
+    if (len % 2 != 0) {
+        message[len] = 'X';
+        message[len + 1] = '\0';
+        len++;
+    }
+    for (int i = 0; i < len; i++) {
+        message[i] = toupper(message[i]);
+    }
+    for (int i = 0; i < len; i += 2) {
+        int x1 = message[i] - 'A';
+        int x2 = message[i + 1] - 'A';
+        int y1 = (key[0][0] * x1 + key[0][1] * x2) % 26;
+        int y2 = (key[1][0] * x1 + key[1][1] * x2) % 26;
+        message[i] = 'A' + y1;
+        message[i + 1] = 'A' + y2;
+    }
+}
+
+int main() {
+    int key[2][2];
+    printf("Enter the 2x2 key matrix elements (space-separated):\n");
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            scanf("%d", &key[i][j]);
+        }
+    }
+    while (getchar() != '\n');
+
+    char message[100];
+    printf("Enter the message to encrypt (uppercase): ");
+    fgets(message, sizeof(message), stdin);
+    message[strcspn(message, "\n")] = 0;
+    hillCipherEncrypt(message, key);
+    printf("Encrypted message: %s\n", message);
+    return 0;
+}
+ 
