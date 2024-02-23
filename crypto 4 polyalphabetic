@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void polyalphabeticSubstitutionEncrypt(char *plaintext, char *key) {
+    int i, j;
+    int keyLen = strlen(key);
+    int textLen = strlen(plaintext);
+
+    for (i = 0, j = 0; i < textLen; ++i) {
+        if (isalpha(plaintext[i])) {
+            int shift = tolower(key[j % keyLen]) - 'a';
+            char base = islower(plaintext[i]) ? 'a' : 'A';
+            plaintext[i] = base + ((plaintext[i] - base + shift) % 26);
+            ++j;
+        }
+    }
+}
+
+int main() {
+    char plaintext[1000], key[100];
+    
+    printf("Enter the plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+
+    printf("Enter the key: ");
+    fgets(key, sizeof(key), stdin);
+    plaintext[strcspn(plaintext, "\n")] = '\0';
+    key[strcspn(key, "\n")] = '\0';
+
+    polyalphabeticSubstitutionEncrypt(plaintext, key);
+
+    printf("Encrypted Text: %s\n", plaintext);
+
+    return 0;
+}
