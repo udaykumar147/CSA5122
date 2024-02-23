@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <string.h>
+void caesarCipherEncrypt(char *plaintext, int key) {
+    int i;
+    for (i = 0; plaintext[i] != '\0'; ++i) {
+        char ch = plaintext[i];
+        if (ch >= 'a' && ch <= 'z') {
+            ch = 'a' + (ch - 'a' + key) % 26;
+        } else if (ch >= 'A' && ch <= 'Z') {
+            ch = 'A' + (ch - 'A' + key) % 26;
+        }
+        plaintext[i] = ch;
+    }
+}
+
+int main() {
+    char plaintext[100];
+    int key;
+
+    printf("Enter the plaintext: ");
+    fgets(plaintext, sizeof(plaintext), stdin);
+    plaintext[strcspn(plaintext, "\n")] = 0;
+    for (key = 1; key <= 25; ++key) {
+        char encryptedText[100];
+        strcpy(encryptedText, plaintext);
+        caesarCipherEncrypt(encryptedText, key);
+        printf("Key %d: %s\n", key, encryptedText);
+    }
+    return 0;
+}
