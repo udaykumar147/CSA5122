@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+// Function to check if a and m are coprime
+int areCoprime(int a, int m) {
+    // Check if GCD of a and m is 1
+    for (int i = 2; i <= a && i <= m; ++i) {
+        if (a % i == 0 && m % i == 0)
+            return 0; // Not coprime
+    }
+    return 1; // Coprime
+}
+
+// Function to determine if affine cipher is one-to-one
+int isAffineOneToOne(int a) {
+    // For affine cipher to be one-to-one, 'a' must be coprime with 26
+    return areCoprime(a, 26);
+}
+
+int main() {
+    // a. Check limitations on value of b:
+    // There are no limitations on the value of 'b'. 'b' can take any value from 0 to 25.
+
+    // b. Determine which values of 'a' are not allowed:
+    printf("Values of 'a' not allowed:\n");
+    for (int a = 1; a < 26; ++a) {
+        if (!isAffineOneToOne(a))
+            printf("%d ", a);
+    }
+    printf("\n");
+
+    return 0;
+}
