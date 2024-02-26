@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+#define MAX_SIZE 1000
+
+void removeSpaces(char *str) {
+    int count = 0;
+    for (int i = 0; str[i]; i++) {
+        if (str[i] != ' ')
+            str[count++] = str[i];
+    }
+    str[count] = '\0';
+}
+
+void decrypt_substitution(char *ciphertext, char *key) {
+    int len = strlen(ciphertext);
+    printf("Decrypted Text: ");
+    for (int i = 0; i < len; i++) {
+        char decrypted_char = ciphertext[i];
+        if (isalpha(ciphertext[i])) {
+            if (isupper(ciphertext[i])) {
+                decrypted_char = key[ciphertext[i] - 'A'];
+            } else {
+                decrypted_char = tolower(key[toupper(ciphertext[i]) - 'A']);
+            }
+        }
+        printf("%c", decrypted_char);
+    }
+    printf("\n\n");
+}
+
+void frequency_attack_substitution(char *ciphertext, int top_n) {
+    int letter_count[ALPHABET_SIZE] = {0};
+    int len = strlen(ciphertext);
+
+    for (int i = 0; i < len; i++) {
+        if (isalpha(ciphertext[i])) {
+            if (isupper(ciphertext[i])) {
+                letter_count[ciphertext[i] - 'A']++;
+            } else {
+                letter_count[toupper(ciphertext[i]) - 'A']++;
+            }
+        }
+    }
+
+    // Sort the letters by frequency
+    int freq_sorted_index[ALPHABET_SIZE];
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        freq_sorted_index[i] = i;
+    }
+    for (int i = 0; i < ALPHABET_SIZE - 1; i++) {
+        for (int j = i + 1; j < ALPHABET_SIZE; j++) {
+            if (letter_count[freq_sorted_index[i]] < letter_count[freq_sorted_index[j]]) {
+                int temp = freq_sorted_index[i];
+                freq_sorted_index[i] = freq_sorted_index[j];
+                freq_sorted_index[j] = temp;
+            }
+        }
+    }
+
+    // Generate possible plaintexts
+    printf("Top %d Possible Plaintexts:\n", top_n);
+    for (int k = 0; k < top_n; k++) {
+        char key[ALPHABET_SIZE + 1];
+        for (int i = 0; i < ALPHABET_SIZE; i++) {
+            key[freq_sorted_index[i]] = 'A' + (k + i) % ALPHABET_SIZE;
+        }
+        key[ALPHABET_SIZE] = '\0';
+        printf("Key: %s\n", key);
+        decrypt_substitution(ciphertext, key);
+    }
+}
+
+int main() {
+    char ciphertext[MAX_SIZE] = "This is an example ciphertext encrypted using a monoalphabetic substitution cipher.";
+    int top_n = 10; // Top N possible plaintexts to display
+
+    removeSpaces(ciphertext);
+
+    printf("Ciphertext: %s\n\n", ciphertext);
+
+    frequency_attack_substitution(ciphertext, top_n);
+
+    return 0;
+}
