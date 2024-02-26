@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+void removeDuplicates(char *keyword) {
+    int len = strlen(keyword);
+    if (len <= 1)
+        return;
+
+    int index = 0;
+    for (int i = 0; i < len; i++) {
+        int j;
+        for (j = 0; j < i; j++) {
+            if (keyword[i] == keyword[j])
+                break;
+        }
+        if (j == i) {
+            keyword[index++] = keyword[i];
+        }
+    }
+    keyword[index] = '\0';
+}
+
+void generateCipherAlphabet(char *keyword, char *cipherAlphabet) {
+    int len = strlen(keyword);
+    char key[ALPHABET_SIZE];
+    strcpy(key, keyword);
+    removeDuplicates(key);
+
+    int index = 0;
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (!strchr(keyword, c)) {
+            cipherAlphabet[index++] = c;
+        }
+    }
+    strcpy(cipherAlphabet + index, key);
+}
+
+void encrypt(char *plaintext, char *keyword) {
+    char cipherAlphabet[ALPHABET_SIZE + 1];
+    generateCipherAlphabet(keyword, cipherAlphabet);
+
+    int len = strlen(plaintext);
+    for (int i = 0; i < len; i++) {
+        if (isalpha(plaintext[i]) && isupper(plaintext[i])) {
+            plaintext[i] = cipherAlphabet[plaintext[i] - 'A'];
+        }
+    }
+}
+
+void decrypt(char *ciphertext, char *keyword) {
+    char cipherAlphabet[ALPHABET_SIZE + 1];
+    generateCipherAlphabet(keyword, cipherAlphabet);
+
+    int len = strlen(ciphertext);
+    for (int i = 0; i < len; i++) {
+        if (isalpha(ciphertext[i]) && isupper(ciphertext[i])) {
+            for (int j = 0; j < ALPHABET_SIZE; j++) {
+                if (ciphertext[i] == cipherAlphabet[j]) {
+                    ciphertext[i] = 'A' + j;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    char keyword[] = "KEYWORD";
+    char plaintext[] = "HELLO WORLD";
+    char ciphertext[sizeof(plaintext)] = {0};
+
+    encrypt(plaintext, keyword);
+    printf("Encrypted: %s\n", plaintext);
+
+    decrypt(plaintext, keyword);
+    printf("Decrypted: %s\n", plaintext);
+
+    return 0;
+}
