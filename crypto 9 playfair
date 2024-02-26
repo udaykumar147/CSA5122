@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define ROWS 5
+#define COLS 5
+
+void removeSpaces(char *str) {
+    int count = 0;
+    for (int i = 0; str[i]; i++) {
+        if (str[i] != ' ')
+            str[count++] = str[i];
+    }
+    str[count] = '\0';
+}
+
+void findPosition(char matrix[ROWS][COLS], char ch, int *row, int *col) {
+    if (ch == 'J')
+        ch = 'I';
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            if (matrix[i][j] == ch) {
+                *row = i;
+                *col = j;
+                return;
+            }
+        }
+    }
+}
+
+void decryptPlayfair(char *ciphertext, char matrix[ROWS][COLS]) {
+    int len = strlen(ciphertext);
+    for (int i = 0; i < len; i += 2) {
+        int row1, col1, row2, col2;
+        findPosition(matrix, ciphertext[i], &row1, &col1);
+        findPosition(matrix, ciphertext[i + 1], &row2, &col2);
+
+        if (row1 == row2) {
+            printf("%c%c", matrix[row1][(col1 - 1 + COLS) % COLS], matrix[row2][(col2 - 1 + COLS) % COLS]);
+        } else if (col1 == col2) {
+            printf("%c%c", matrix[(row1 - 1 + ROWS) % ROWS][col1], matrix[(row2 - 1 + ROWS) % ROWS][col2]);
+        } else {
+            printf("%c%c", matrix[row1][col2], matrix[row2][col1]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    char matrix[ROWS][COLS] = {
+        {'K', 'X', 'J', 'E', 'Y'},
+        {'U', 'R', 'E', 'B', 'Z'},
+        {'W', 'H', 'F', 'T', 'S'},
+        {'A', 'D', 'G', 'L', 'C'},
+        {'M', 'N', 'O', 'P', 'Q'}
+    };
+
+    char ciphertext[] = "KXJEY UREBE ZWEHE WRYTU HEYFS KREHE GOYFI WTTTU OLKSY CAJPO BOTEI ZONTX BYBNT GONEY CUZWR GDSON SXBOU YWRHE BAAHY USEDQ";
+
+    removeSpaces(ciphertext);
+
+    printf("Decrypted Message:\n");
+    decryptPlayfair(ciphertext, matrix);
+
+    return 0;
+}
