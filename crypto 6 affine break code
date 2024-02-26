@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int gcd(int a, int b) {
+    int temp;
+    while (b != 0) {
+        temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++)
+        if ((a * x) % m == 1)
+            return x;
+    return -1;
+}
+
+void decrypt_affine_cipher(char* ciphertext, int a, int b) {
+    int len = strlen(ciphertext);
+    int a_inverse = modInverse(a, 26);
+    if (a_inverse == -1) {
+        printf("Decryption is not possible with the given key.\n");
+        return;
+    }
+    for (int i = 0; i < len; i++) {
+        if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+            int x = ciphertext[i] - 'A';
+            x = (a_inverse * (x - b + 26)) % 26;
+            ciphertext[i] = x + 'A';
+        }
+    }
+    printf("Decrypted message: %s\n", ciphertext);
+}
+
+int main() {
+    char ciphertext[] = "PQOBBBTVBUBOBZUZ"; // Example ciphertext
+    int freq[26] = {0};
+    int len = strlen(ciphertext);
+    for (int i = 0; i < len; i++) {
+        if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+            freq[ciphertext[i] - 'A']++;
+        }
+    }
+    int max1 = 0, max2 = 0;
+    char max_char1, max_char2;
+    for (int i = 0; i < 26; i++) {
+        if (freq[i] > max1) {
+            max2 = max1;
+            max_char2 = max_char1;
+            max1 = freq[i];
+            max_char1 = 'A' + i;
+        } else if (freq[i] > max2) {
+            max2 = freq[i];
+            max_char2 = 'A' + i;
+        }
+    }
+    int a = 7; // Chosen arbitrarily
+    int b = (max_char1 - 'A' - 4 * (max_char2 - 'A')) % 26;
+    printf("Key (a, b): (%d, %d)\n", a, b);
+    decrypt_affine_cipher(ciphertext, a, b);
+    return 0;
+}
