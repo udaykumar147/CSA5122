@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_SIZE 100
+
+int determinant(int matrix[3][3]) {
+    return matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
+           matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
+           matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+}
+
+void inverse(int matrix[3][3], int det) {
+    int adj[3][3];
+    adj[0][0] = matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1];
+    adj[0][1] = matrix[0][2] * matrix[2][1] - matrix[0][1] * matrix[2][2];
+    adj[0][2] = matrix[0][1] * matrix[1][2] - matrix[0][2] * matrix[1][1];
+    adj[1][0] = matrix[1][2] * matrix[2][0] - matrix[1][0] * matrix[2][2];
+    adj[1][1] = matrix[0][0] * matrix[2][2] - matrix[0][2] * matrix[2][0];
+    adj[1][2] = matrix[0][2] * matrix[1][0] - matrix[0][0] * matrix[1][2];
+    adj[2][0] = matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0];
+    adj[2][1] = matrix[0][1] * matrix[2][0] - matrix[0][0] * matrix[2][1];
+    adj[2][2] = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            matrix[i][j] = adj[i][j] / det;
+}
+
+void hill_decrypt(int key[3][3], char *ciphertext) {
+    int len = strlen(ciphertext);
+    int decrypted[MAX_SIZE];
+
+    for (int i = 0; i < len; i += 3) {
+        int block[3] = {ciphertext[i] - 'A', ciphertext[i + 1] - 'A', ciphertext[i + 2] - 'A'};
+        decrypted[i] = key[0][0] * block[0] + key[0][1] * block[1] + key[0][2] * block[2];
+        decrypted[i + 1] = key[1][0] * block[0] + key[1][1] * block[1] + key[1][2] * block[2];
+        decrypted[i + 2] = key[2][0] * block[0] + key[2][1] * block[1] + key[2][2] * block[2];
+    }
+
+    printf("Decrypted Text: ");
+    for (int i = 0; i < len; i++)
+        printf("%c", (decrypted[i] % 26) + 'A');
+    printf("\n");
+}
+
+int main() {
+    int key[3][3] = {{6, 24, 1}, {13, 16, 10}, {20, 17, 15}};
+    char ciphertext[MAX_SIZE] = "NKIRNAMFZEV";
+
+    hill_decrypt(key, ciphertext);
+
+    return 0;
+}
