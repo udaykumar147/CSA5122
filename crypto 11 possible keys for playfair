@@ -1,0 +1,16 @@
+#include <stdio.h>
+
+long long factorial(int n) {
+    long long result = 1;
+    for (int i = 1; i <= n; ++i) {
+        result *= i;
+    }
+    return result;
+}
+
+int main() {
+    int num_letters = 25;
+    long long keys = factorial(num_letters) / 2;
+    printf("Approximate number of possible keys: %lld\n", keys);
+    return 0;
+}
